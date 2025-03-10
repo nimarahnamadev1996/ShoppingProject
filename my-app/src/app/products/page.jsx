@@ -4,10 +4,10 @@ import LatestProducts from "@/components/LatestProducts"
 
 
 
-const Products = () => {
+const Products = ({searchParams}) => {
     return (
       <div>
-          <LatestProducts/>
+          <LatestProducts searchParams={searchParams}/>
       </div>
     )
   }

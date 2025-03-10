@@ -5,9 +5,15 @@ import ProductList from './ProductList'
 
 
 
-const LatestProducts = async() => {
+const LatestProducts = async({searchParams}) => {
 
-  const res = await fetch('http://localhost:3000/api/products')
+  const category = searchParams?.category
+
+  const url = category ? 
+  `http://localhost:3000/api/products?category=${category}` :
+  `http://localhost:3000/api/products`
+
+  const res = await fetch(url)
 
   const products = await res.json()
 
@@ -15,7 +21,7 @@ const LatestProducts = async() => {
 
   return (
     <div className="new-products">
-        <h2 className="title">محصولات پر فروش</h2>
+        <h2 className="title">{category? `محصولات ${category}`: "محصولات پر فروش"}</h2>
 
         <ProductList products = {products}/>
     </div>

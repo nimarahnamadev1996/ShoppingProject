@@ -8,7 +8,7 @@ const ProductList = ({products}) => {
        {
         products.length > 0 &&
         products.map((product) => (
-            <ProductBox product={product} key={product.id}/>
+            <ProductBox product={product} key={product._id}/>
         ))
        }
      </div>

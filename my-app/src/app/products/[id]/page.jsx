@@ -1,83 +1,16 @@
-
-import { enTofa } from '../../../../utils/Utilities'
-
-
-const products = [
-    {
-        "id": 1,
-        "title": 'محصول 1',
-        "price": 109.95,
-        "image": "/images/3.jpg",
-        "description": "فقط برای تست میباشد",
-      },
-      {
-        "id": 2,
-        "title": 'محصول 2',
-        "price": 22.3,
-        "image": "/images/2.jpg",
-        "description": "فقط برای تست میباشد",
-        
-      },
-      {
-        "id": 3,
-        "title": 'محصول 3',
-        "price": 55.99,
-        "image": "/images/1.jpg",
-        "description": "فقط برای تست میباشد",
-        
-      },
-      {
-        "id": 4,
-        "title": 'محصول 4',
-        "price": 15.99, 
-        "image": "/images/3.jpg",
-        "description": "فقط برای تست میباشد",
-      },
-
-      {
-        "id": 5,
-        "title": 'محصول 5',
-        "price": 15.99, 
-        "image": "/images/1.jpg",
-        "description": "فقط برای تست میباشد",
-       
-      },
-
-      {
-        "id": 6,
-        "title": 'محصول 6',
-        "price": 19.99, 
-        "image": "/images/2.jpg",
-        "description": "فقط برای تست میباشد",
-       
-      },
-
-      {
-        "id": 7,
-        "title": 'محصول 7',
-        "price": 28.00, 
-        "image": "/images/3.jpg",
-        "description": "فقط برای تست میباشد",
-       
-      },
-
-      {
-        "id": 8,
-        "title": 'محصول 8',
-        "price": 26.00, 
-        "image": "/images/1.jpg",
-        "description": "فقط برای تست میباشد",
-       
-      },
-]
+import { enTofa } from "@/utils/Utilities"
+import Link from "next/link"
 
 
 
-const ProductDetail = ({params}) => {
 
-    const {id} = params
+const ProductDetail = async({params}) => {
 
-    const mainProduct = products.find((item) => item.id == id)
+    const {id} = await params
+
+    const res = await fetch(`http://localhost:3000/api/products/${id}`)
+
+    const mainProduct = await res.json()
 
   return (
     <div className="product-detail">
@@ -89,6 +22,13 @@ const ProductDetail = ({params}) => {
 
                 <div className="new-product-info">
                     <h1 className="new-product-title">{mainProduct.title}</h1>
+
+                    <span>دسته بندی:</span>
+                    <Link href={`/products?category=${mainProduct.category}`}>
+                     {mainProduct.category}
+                    </Link>
+                    
+                    <br/><br/>
 
                     <p className="new-product-description">{mainProduct.description}</p>
 

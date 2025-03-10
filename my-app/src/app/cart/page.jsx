@@ -1,46 +1,66 @@
-import TrashIcon from '@/components/icons/Trash'
-import { enTofa } from '@/utils/Utilities'
+'use client'
+
 import Image from 'next/image'
 
 
+import TrashIcon from '@/components/icons/Trash'
+import { useGlobalContext } from '@/contexts/CartContext'
+import { enTofa } from '@/utils/Utilities'
+import { useState } from 'react'
 
-const products = [
-    {
-        "id": 1,
-        "title": 'محصول 1',
-        "price": 109.95,
-        "image": "/images/3.jpg",
-        "description": "فقط برای تست میباشد",
-      },
-      {
-        "id": 2,
-        "title": 'محصول 2',
-        "price": 22.3,
-        "image": "/images/2.jpg",
-        "description": "فقط برای تست میباشد",
-        
-      },
-      {
-        "id": 3,
-        "title": 'محصول 3',
-        "price": 55.99,
-        "image": "/images/1.jpg",
-        "description": "فقط برای تست میباشد",
-        
-      },
-      {
-        "id": 4,
-        "title": 'محصول 4',
-        "price": 15.99, 
-        "image": "/images/3.jpg",
-        "description": "فقط برای تست میباشد",
-      },
 
-]
+
 
 
 
 const Cart = () => {
+
+  const {cart,updateQuantity,removeFromCart,getTotal,clearCart} = useGlobalContext()
+
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    email: "",
+    country: "",
+    city: "",
+    address: "",
+    postalCode: ""
+  })
+
+
+   const handleChange = (e) => {
+     setUserInfo({...userInfo, [e.target.name] : e.target.value})
+   }
+
+   const handleSubmit = async(e) => {
+    e.preventDefault()
+
+    const orderData = {
+      user: userInfo,
+      cart,
+      totalPrice: getTotal()
+    }
+
+    try{
+      const res = await fetch(`/api/orders`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData),
+      })
+     if(res.ok){
+      alert("سفارش شما ثبت شد")
+      clearCart()
+      setUserInfo({name:"", email:"", address:"", country:"", city:"", postalCode:""})
+     }
+     else{
+      alert("خطا در ثبت شفارش")
+     }
+  } 
+  catch(error){
+      alert("مشکلی پیش آمده است")
+  }
+}
+
+   
   return (
     <div className='cart-grid'>
 
@@ -48,14 +68,14 @@ const Cart = () => {
            <h2>سبد خرید</h2>
 
            {
-            products.length == 0 && 
+            cart.length == 0 && 
             <div>
                 سبد خرید خالی است
             </div>
            }
 
            {
-            products.length > 0 && 
+            cart.length > 0 && 
             (
              <table className="cart-table">
                 <thead>
@@ -67,7 +87,7 @@ const Cart = () => {
 
                  <tbody>
                     {
-                      products.map((product) => (
+                      cart.map((product) => (
                         <tr key={product.id}>
                             <td className="cart-product">
 
@@ -81,9 +101,11 @@ const Cart = () => {
                                 <input 
                                  type="number" 
                                  value={product.quantity} 
-                                 min="1"/>
+                                 min="1"
+                                 onChange={() => updateQuantity(product._id,Number(event.target.value))}/>
 
-                                 <button>
+                                 <button
+                                  onClick={() => removeFromCart(product._id)}>
                                     <TrashIcon/>
                                  </button>
                               </td>
@@ -98,7 +120,7 @@ const Cart = () => {
                                <tr>
                                  <td> <strong>مجموع</strong></td>
                                  <td>
-                                    <strong>{enTofa(200) }
+                                    <strong>{enTofa(getTotal()) }
                                      </strong></td>
                                </tr>
                  </tbody>
@@ -110,18 +132,19 @@ const Cart = () => {
         </div>
 
           {
-                products.length > 0 && (
+                cart.length > 0 && (
                     <div className="cart-box">
 
                         <h2 className="cart-title">اطلاعات شما</h2>
                         
-                        <form className="cart-form" >
-                            <input  name="name" type="text" className="cart-input" placeholder="نام" />
-                            <input  name="email" type="email" className="cart-input" placeholder="ایمیل" />
-                            <input  name="country" type="text" className="cart-input" placeholder="کشور" />
-                            <input  name="city" type="text" className="cart-input" placeholder="شهر" />
-                            <input  name="address" type="text" className="cart-input" placeholder="آدرس" />
-                            <input  name="postalCode" type="number" className="cart-input" placeholder="کدپستی" />
+                        <form className="cart-form" onSubmit={handleSubmit}>
+
+                            <input value={userInfo.name}  name="name" type="text" onChange={handleChange} className="cart-input" placeholder="نام" />
+                            <input value={userInfo.email} name="email" type="email" onChange={handleChange} className="cart-input" placeholder="ایمیل" />
+                            <input value={userInfo.country} name="country" type="text" onChange={handleChange} className="cart-input" placeholder="کشور" />
+                            <input value={userInfo.city} name="city" type="text" onChange={handleChange} className="cart-input" placeholder="شهر" />
+                            <input value={userInfo.address} name="address" type="text" onChange={handleChange} className="cart-input" placeholder="آدرس" />
+                            <input value={userInfo.postalCode} name="postalCode" type="number" onChange={handleChange} className="cart-input" placeholder="کدپستی" />
 
                             <button 
                              className="cart-button">
